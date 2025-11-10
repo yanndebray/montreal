@@ -5,6 +5,11 @@
 ## Overview
 The MATLAB MCP Core Server is a local Model Context Protocol (MCP) server that lets AI coding agents start MATLAB, inspect the environment, run scripts, analyze code quality, and execute tests securely within defined folders. Instead of copying generated code manually between a chat and MATLAB, the server exposes focused tools that your AI client can invoke directly.
 
+## Demos
+
+- Claude Desktop: [weather_linear_regression.m](claude/weather_linear_regression.m)
+![claude](img/claude.png)
+
 ## Key Features
 - Launch and shut down a local MATLAB session on demand.
 - Execute ad‑hoc MATLAB statements or full script files.
