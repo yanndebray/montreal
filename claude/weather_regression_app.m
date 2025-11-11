@@ -115,8 +115,8 @@ function weather_regression_app()
     btnGrid.ColumnWidth = {'1x', 200, '1x'};
     btnGrid.Padding = [20 5 20 10];
     
-    % Spacers
-    uilabel(btnGrid);
+    % Spacers (blank labels so default 'Label' text doesn't appear)
+    uilabel(btnGrid, 'Text', '');
     
     % Analyze button
     analyzeBtn = uibutton(btnGrid, 'Text', '🔍 Analyze Weather Trends', ...
@@ -125,11 +125,13 @@ function weather_regression_app()
     analyzeBtn.BackgroundColor = [0.3, 0.5, 0.9];
     analyzeBtn.FontColor = 'white';
     
-    uilabel(btnGrid);
+    uilabel(btnGrid, 'Text', '');
     
-    % Results area
-    resultsTabGroup = uitabgroup(bottomPanel);
-    resultsTabGroup.Position = [10, 10, bottomPanel.Position(3)-20, bottomPanel.Position(4)-20];
+    % Results area (responsive layout: avoid manual Position calculations)
+    bottomGrid = uigridlayout(bottomPanel, [1,1]);
+    bottomGrid.RowHeight = {'1x'}; bottomGrid.ColumnWidth = {'1x'};
+    resultsTabGroup = uitabgroup(bottomGrid);
+    resultsTabGroup.Layout.Row = 1; resultsTabGroup.Layout.Column = 1;
     
     % Tab 1: Statistics
     statsTab = uitab(resultsTabGroup, 'Title', 'Statistics & Regression');
@@ -169,29 +171,31 @@ function weather_regression_app()
     detailsPanel = uipanel(statsGrid, 'Title', 'Detailed Statistics', 'FontWeight', 'bold', ...
                            'BackgroundColor', 'white');
     detailsPanel.Layout.Row = 3;
-    detailsTextArea = uitextarea(detailsPanel, 'Value', 'Run analysis to see results...', ...
+    detailsGrid = uigridlayout(detailsPanel, [1,1]);
+    detailsGrid.RowHeight = {'1x'}; detailsGrid.ColumnWidth = {'1x'};
+    detailsTextArea = uitextarea(detailsGrid, 'Value', 'Run analysis to see results...', ...
                                  'Editable', 'off', 'FontSize', 11);
-    detailsTextArea.Position = [10, 10, detailsPanel.Position(3)-20, detailsPanel.Position(4)-40];
+    detailsTextArea.Layout.Row = 1; detailsTextArea.Layout.Column = 1;
     
-    % Tab 2: Trend Plot
+    % Tab 2: Trend Plot (responsive)
     trendTab = uitab(resultsTabGroup, 'Title', 'Temperature Trend');
-    trendAxes = uiaxes(trendTab);
-    trendAxes.Position = [40, 40, trendTab.Position(3)-80, trendTab.Position(4)-80];
+    trendGrid = uigridlayout(trendTab, [1,1]); trendGrid.RowHeight = {'1x'}; trendGrid.ColumnWidth = {'1x'};
+    trendAxes = uiaxes(trendGrid); trendAxes.Layout.Row = 1; trendAxes.Layout.Column = 1;
     
     % Tab 3: Temperature Variations
     tempTab = uitab(resultsTabGroup, 'Title', 'Temperature Variations');
-    tempAxes = uiaxes(tempTab);
-    tempAxes.Position = [40, 40, tempTab.Position(3)-80, tempTab.Position(4)-80];
+    tempGrid = uigridlayout(tempTab, [1,1]); tempGrid.RowHeight = {'1x'}; tempGrid.ColumnWidth = {'1x'};
+    tempAxes = uiaxes(tempGrid); tempAxes.Layout.Row = 1; tempAxes.Layout.Column = 1;
     
     % Tab 4: Residuals
     residTab = uitab(resultsTabGroup, 'Title', 'Residual Plot');
-    residAxes = uiaxes(residTab);
-    residAxes.Position = [40, 40, residTab.Position(3)-80, residTab.Position(4)-80];
+    residGrid = uigridlayout(residTab, [1,1]); residGrid.RowHeight = {'1x'}; residGrid.ColumnWidth = {'1x'};
+    residAxes = uiaxes(residGrid); residAxes.Layout.Row = 1; residAxes.Layout.Column = 1;
     
     % Tab 5: Precipitation
     precipTab = uitab(resultsTabGroup, 'Title', 'Precipitation');
-    precipAxes = uiaxes(precipTab);
-    precipAxes.Position = [40, 40, precipTab.Position(3)-80, precipTab.Position(4)-80];
+    precipGrid = uigridlayout(precipTab, [1,1]); precipGrid.RowHeight = {'1x'}; precipGrid.ColumnWidth = {'1x'};
+    precipAxes = uiaxes(precipGrid); precipAxes.Layout.Row = 1; precipAxes.Layout.Column = 1;
     
     % Callback functions
     function selectCity(name, lat, lon)
@@ -208,154 +212,92 @@ function weather_regression_app()
     end
     
     function analyzeWeather()
-        % Validate inputs
+        % Validate presence of inputs
         if isempty(startDateField.Value) || isempty(endDateField.Value)
-            uialert(fig, 'Please enter start and end dates', 'Missing Data');
-            return;
-        end
-        
+            uialert(fig, 'Please enter start and end dates', 'Missing Data'); return; end
+        [datesOK, startStr, endStr, dateErr] = validateDates(startDateField.Value, endDateField.Value);
+        if ~datesOK
+            uialert(fig, dateErr, 'Invalid Dates'); return; end
         if latField.Value == 0 && lonField.Value == 0
-            uialert(fig, 'Please enter valid coordinates or select a city', 'Missing Data');
-            return;
-        end
-        
-        % Show progress dialog
+            uialert(fig, 'Please enter valid coordinates or select a city', 'Missing Data'); return; end
+
+        % Progress dialog
         progressDlg = uiprogressdlg(fig, 'Title', 'Analyzing Weather Data', ...
-                                    'Message', 'Fetching data from API...', ...
-                                    'Indeterminate', 'on');
-        
+            'Message', 'Fetching data from API...', 'Indeterminate', 'on');
+
         try
-            % Fetch weather data
             url = sprintf(['https://archive-api.open-meteo.com/v1/archive?' ...
                 'latitude=%.4f&longitude=%.4f&start_date=%s&end_date=%s&' ...
-                'daily=temperature_2m_max,temperature_2m_min,precipitation_sum&' ...
-                'timezone=auto'], ...
-                latField.Value, lonField.Value, startDateField.Value, endDateField.Value);
-            
-            data = webread(url);
-            
+                'daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto'], ...
+                latField.Value, lonField.Value, startStr, endStr);
+            opts = weboptions('Timeout', 30);
+            data = webread(url, opts);
             progressDlg.Message = 'Processing data...';
-            
-            % Extract data
-            dates = datetime(data.daily.time, 'InputFormat', 'yyyy-MM-dd');
-            tempMax = data.daily.temperature_2m_max;
-            tempMin = data.daily.temperature_2m_min;
-            precipitation = data.daily.precipitation_sum;
-            tempAvg = (tempMax + tempMin) / 2;
-            dayNumbers = (1:length(dates))';
-            
-            % Perform linear regression
-            p = polyfit(dayNumbers, tempAvg, 1);
-            slope = p(1);
-            intercept = p(2);
-            tempPred = polyval(p, dayNumbers);
-            
-            % Calculate R-squared
-            ssRes = sum((tempAvg - tempPred).^2);
-            ssTot = sum((tempAvg - mean(tempAvg)).^2);
-            rSquared = 1 - (ssRes / ssTot);
-            
-            % Calculate statistics
-            numDays = length(tempAvg);
-            avgTemp = mean(tempAvg);
-            minTemp = min(tempAvg);
-            maxTemp = max(tempAvg);
-            stdTemp = std(tempAvg);
-            totalPrecip = sum(precipitation);
-            tempChange = slope * numDays;
-            
+
+            if ~isfield(data,'daily') || ~all(isfield(data.daily,{ 'time','temperature_2m_max','temperature_2m_min','precipitation_sum'}))
+                error('Unexpected API response structure. Try a shorter date range.');
+            end
+
+            dates = datetime(string(data.daily.time),'InputFormat','yyyy-MM-dd');
+            tempMax = double(data.daily.temperature_2m_max(:));
+            tempMin = double(data.daily.temperature_2m_min(:));
+            precipitation = double(data.daily.precipitation_sum(:));
+            tempAvg = (tempMax + tempMin)/2;
+            dayNumbers = (1:numel(dates))';
+            if numel(dayNumbers) < 2
+                close(progressDlg);
+                uialert(fig, 'Need at least 2 days of data to compute a trend.', 'Not Enough Data');
+                return;
+            end
+
+            % Regression
+            p = polyfit(dayNumbers, tempAvg, 1); slope = p(1); intercept = p(2); tempPred = polyval(p, dayNumbers);
+            ssRes = sum((tempAvg - tempPred).^2); ssTot = sum((tempAvg - mean(tempAvg)).^2); rSquared = 1 - ssRes/ssTot;
+            numDays = numel(tempAvg); avgTemp = mean(tempAvg); [minTemp,minIdx] = min(tempAvg); [maxTemp,maxIdx] = max(tempAvg);
+            stdTemp = std(tempAvg); totalPrecip = sum(precipitation); tempChange = slope * numDays;
             progressDlg.Message = 'Creating visualizations...';
-            
-            % Update statistics cards
+
+            % Stat cards
             statCard1Text.Text = sprintf('%.3f', rSquared);
             statCard2Text.Text = sprintf('%.4f', slope);
             statCard3Text.Text = sprintf('%.1f', avgTemp);
             statCard4Text.Text = sprintf('%.1f', tempChange);
-            
-            % Update regression equation
-            cityName = cityNameField.Value;
-            if isempty(cityName)
-                cityName = sprintf('Location (%.2f, %.2f)', latField.Value, lonField.Value);
-            end
-            regressionText.Text = sprintf('Regression for %s:  Temperature = %.4f × Day + %.4f', ...
-                                          cityName, slope, intercept);
-            
-            % Update detailed statistics
-            detailsText = {
-                sprintf('═══ Analysis Period ═══');
-                sprintf('Number of days: %d', numDays);
-                sprintf('Date range: %s to %s', datestr(dates(1)), datestr(dates(end)));
-                sprintf('');
-                sprintf('═══ Temperature Statistics ═══');
-                sprintf('Average temperature: %.2f °C', avgTemp);
-                sprintf('Minimum temperature: %.2f °C on %s', minTemp, datestr(dates(tempAvg == minTemp)));
-                sprintf('Maximum temperature: %.2f °C on %s', maxTemp, datestr(dates(tempAvg == maxTemp)));
-                sprintf('Temperature range: %.2f °C', maxTemp - minTemp);
-                sprintf('Standard deviation: %.2f °C', stdTemp);
-                sprintf('');
-                sprintf('═══ Trend Analysis ═══');
-                sprintf('Slope: %.4f °C per day', slope);
-                sprintf('Total change: %.2f °C over %d days', tempChange, numDays);
-                '';
-                getTrendText(slope, tempChange);
-                sprintf('R-squared: %.4f (%.1f%% variance explained)', rSquared, rSquared*100);
-                sprintf('');
-                sprintf('═══ Precipitation ═══');
-                sprintf('Total precipitation: %.2f mm', totalPrecip);
-                sprintf('Average daily precipitation: %.2f mm', totalPrecip/numDays);
-            };
-            detailsTextArea.Value = detailsText;
-            
-            % Plot 1: Temperature trend with regression
-            cla(trendAxes);
-            scatter(trendAxes, dayNumbers, tempAvg, 30, 'filled', 'MarkerFaceAlpha', 0.6);
-            hold(trendAxes, 'on');
-            plot(trendAxes, dayNumbers, tempPred, 'r-', 'LineWidth', 2);
-            xlabel(trendAxes, 'Day Number');
-            ylabel(trendAxes, 'Average Temperature (°C)');
-            title(trendAxes, sprintf('Temperature Trend with Linear Regression (R² = %.3f)', rSquared));
-            legend(trendAxes, 'Actual Temperature', 'Linear Fit', 'Location', 'best');
-            grid(trendAxes, 'on');
-            hold(trendAxes, 'off');
-            
-            % Plot 2: Temperature variations
-            cla(tempAxes);
-            plot(tempAxes, dates, tempMax, 'r-', 'LineWidth', 1.5);
-            hold(tempAxes, 'on');
-            plot(tempAxes, dates, tempMin, 'b-', 'LineWidth', 1.5);
-            plot(tempAxes, dates, tempAvg, 'k-', 'LineWidth', 2);
-            xlabel(tempAxes, 'Date');
-            ylabel(tempAxes, 'Temperature (°C)');
-            title(tempAxes, 'Daily Temperature Variations');
-            legend(tempAxes, 'Max Temp', 'Min Temp', 'Avg Temp', 'Location', 'best');
-            grid(tempAxes, 'on');
-            hold(tempAxes, 'off');
-            
-            % Plot 3: Residuals
-            cla(residAxes);
-            residuals = tempAvg - tempPred;
-            scatter(residAxes, tempPred, residuals, 30, 'filled');
-            hold(residAxes, 'on');
-            yline(residAxes, 0, 'r--', 'LineWidth', 2);
-            xlabel(residAxes, 'Predicted Temperature (°C)');
-            ylabel(residAxes, 'Residuals (°C)');
-            title(residAxes, 'Residual Plot');
-            grid(residAxes, 'on');
-            hold(residAxes, 'off');
-            
-            % Plot 4: Precipitation
-            cla(precipAxes);
-            bar(precipAxes, dates, precipitation, 'FaceColor', [0.2, 0.6, 0.8]);
-            xlabel(precipAxes, 'Date');
-            ylabel(precipAxes, 'Precipitation (mm)');
-            title(precipAxes, 'Daily Precipitation');
-            grid(precipAxes, 'on');
-            
-            close(progressDlg);
-            uialert(fig, 'Analysis completed successfully!', 'Success', 'Icon', 'success');
-            
+
+            cityName = cityNameField.Value; if isempty(cityName), cityName = sprintf('Location (%.2f, %.2f)', latField.Value, lonField.Value); end
+            regressionText.Text = sprintf('Regression for %s:  Temperature = %.4f × Day + %.4f', cityName, slope, intercept);
+
+            % Detailed stats
+            detailsText = {sprintf('═══ Analysis Period ═══'); sprintf('Number of days: %d', numDays); ...
+                sprintf('Date range: %s to %s', datestr(dates(1)), datestr(dates(end))); ''; ...
+                sprintf('═══ Temperature Statistics ═══'); sprintf('Average temperature: %.2f °C', avgTemp); ...
+                sprintf('Minimum temperature: %.2f °C on %s', minTemp, datestr(dates(minIdx))); ...
+                sprintf('Maximum temperature: %.2f °C on %s', maxTemp, datestr(dates(maxIdx))); ...
+                sprintf('Temperature range: %.2f °C', maxTemp - minTemp); sprintf('Standard deviation: %.2f °C', stdTemp); ''; ...
+                sprintf('═══ Trend Analysis ═══'); sprintf('Slope: %.4f °C per day', slope); ...
+                sprintf('Total change: %.2f °C over %d days', tempChange, numDays); ''; getTrendText(slope, tempChange); ...
+                sprintf('R-squared: %.4f (%.1f%% variance explained)', rSquared, rSquared*100); ''; ...
+                sprintf('═══ Precipitation ═══'); sprintf('Total precipitation: %.2f mm', totalPrecip); ...
+                sprintf('Average daily precipitation: %.2f mm', totalPrecip/numDays)}; detailsTextArea.Value = detailsText;
+
+            % Plot 1
+            cla(trendAxes); scatter(trendAxes, dayNumbers, tempAvg, 30, 'filled', 'MarkerFaceAlpha', 0.6); hold(trendAxes,'on');
+            plot(trendAxes, dayNumbers, tempPred, 'r-', 'LineWidth',2); xlabel(trendAxes,'Day Number'); ylabel(trendAxes,'Average Temperature (°C)');
+            title(trendAxes, sprintf('Temperature Trend (R² = %.3f)', rSquared)); legend(trendAxes,'Actual','Linear Fit','Location','best'); grid(trendAxes,'on'); hold(trendAxes,'off');
+
+            % Plot 2
+            cla(tempAxes); plot(tempAxes, dates, tempMax,'r-','LineWidth',1.5); hold(tempAxes,'on'); plot(tempAxes, dates, tempMin,'b-','LineWidth',1.5); plot(tempAxes, dates, tempAvg,'k-','LineWidth',2);
+            xlabel(tempAxes,'Date'); ylabel(tempAxes,'Temperature (°C)'); title(tempAxes,'Daily Temperature Variations'); legend(tempAxes,'Max','Min','Avg','Location','best'); grid(tempAxes,'on'); hold(tempAxes,'off');
+
+            % Plot 3
+            cla(residAxes); residuals = tempAvg - tempPred(:); scatter(residAxes, tempPred, residuals, 30,'filled'); hold(residAxes,'on'); yline(residAxes,0,'r--','LineWidth',2);
+            xlabel(residAxes,'Predicted Temperature (°C)'); ylabel(residAxes,'Residuals (°C)'); title(residAxes,'Residual Plot'); grid(residAxes,'on'); hold(residAxes,'off');
+
+            % Plot 4
+            cla(precipAxes); bar(precipAxes, dates, precipitation,'FaceColor',[0.2 0.6 0.8]); xlabel(precipAxes,'Date'); ylabel(precipAxes,'Precipitation (mm)'); title(precipAxes,'Daily Precipitation'); grid(precipAxes,'on');
+
+            close(progressDlg); uialert(fig, 'Analysis completed successfully!', 'Success', 'Icon','success');
         catch ME
-            close(progressDlg);
+            if isvalid(progressDlg); close(progressDlg); end
             uialert(fig, sprintf('Error: %s', ME.message), 'Analysis Failed');
         end
     end
@@ -367,8 +309,28 @@ function weather_regression_app()
     function trendText = getTrendText(slope, tempChange)
         if slope > 0
             trendText = sprintf('Trend: WARMING (%.2f °C increase)', tempChange);
-        else
+        elseif slope < 0
             trendText = sprintf('Trend: COOLING (%.2f °C decrease)', abs(tempChange));
+        else
+            trendText = 'Trend: STABLE (no significant change)';
         end
+    end
+
+    function [ok, startStr, endStr, errMsg] = validateDates(startVal, endVal)
+        ok = false; startStr = ''; endStr = ''; errMsg = '';
+        try
+            sd = datetime(startVal,'InputFormat','yyyy-MM-dd');
+        catch
+            errMsg = 'Start Date must be in YYYY-MM-DD format.'; return;
+        end
+        try
+            ed = datetime(endVal,'InputFormat','yyyy-MM-dd');
+        catch
+            errMsg = 'End Date must be in YYYY-MM-DD format.'; return;
+        end
+        if ed < sd
+            errMsg = 'End Date must be on or after Start Date.'; return;
+        end
+        startStr = datestr(sd,'yyyy-mm-dd'); endStr = datestr(ed,'yyyy-mm-dd'); ok = true;
     end
 end
