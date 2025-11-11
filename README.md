@@ -202,6 +202,8 @@ matlab-mcp-core-server --help
 
 ## Bitcoin Price Forecaster (MATLAB)
 
+![btc_app](img/btc_app.png)
+
 An interactive MATLAB app to explore Bitcoin daily prices, train a simple linear regression model on engineered features, and forecast the next N days.
 
 Features:
