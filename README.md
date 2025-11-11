@@ -1,5 +1,7 @@
 # MATLAB MCP Core Server Integration Guide
 
+[![MATLAB Tests](https://github.com/yanndebray/montreal/actions/workflows/matlab-tests.yml/badge.svg)](https://github.com/yanndebray/montreal/actions/workflows/matlab-tests.yml)
+
 > Integrate MATLAB seamlessly into agentic AI workflows (VS Code GitHub Copilot MCP, Claude Code, Claude Desktop, others) without copy/paste loops.
 
 ## Overview
