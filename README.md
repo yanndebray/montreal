@@ -7,8 +7,15 @@ The MATLAB MCP Core Server is a local Model Context Protocol (MCP) server that l
 
 ## Demos
 
-- Claude Desktop: [weather_linear_regression.m](claude/weather_linear_regression.m)
+### Claude Desktop
+- [weather_linear_regression.m](claude/weather_linear_regression.m) - Simple linear regression script
 ![claude](img/claude.png)
+
+### VS Code GitHub Copilot
+- [weather_regression_app.m](vscode/weather_regression_app.m) - Interactive GUI for analyzing weather trends with linear regression
+  - Features: Multi-city selection, date range picker, live regression analysis, interactive plots
+  - Uses Open-Meteo API for historical weather data
+  - Displays R² score, temperature trends, and precipitation analysis
 
 ## Key Features
 - Launch and shut down a local MATLAB session on demand.
