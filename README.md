@@ -200,6 +200,47 @@ matlab-mcp-core-server --help
 ```
 4. Update client configurations to point to the built binary.
 
+## Bitcoin Price Forecaster (MATLAB)
+
+An interactive MATLAB app to explore Bitcoin daily prices, train a simple linear regression model on engineered features, and forecast the next N days.
+
+Features:
+- Load included sample dataset or a CSV with `Date,Close` columns
+- Visualize historical prices with SMA(7) and SMA(30)
+- Train a next-day prediction model (linear regression with log-returns, moving averages, momentum, volatility, and lagged returns)
+- View validation metrics (RMSE, MAE, R²) and residuals
+- Forecast next N days and export results to CSV
+
+Disclaimer: Educational demo only. Not financial advice.
+
+### How to Run
+1. Open the repository folder in MATLAB.
+2. In the Command Window, run:
+  ```matlab
+  bitcoin_price_regression_app
+  ```
+3. In the UI:
+  - Keep "Sample" selected or switch to "CSV File" and browse to your file.
+  - Click "Train Model" to build the regression.
+  - Click "Forecast" to generate and plot the next N days.
+  - Optionally click "Export CSV" to save the forecast.
+
+CSV format: header row `Date,Close` (ISO date `YYYY-MM-DD`). Additional columns are ignored.
+
+### Key Files
+- `vscode/bitcoin_price_regression_app.m` – UI application
+- `vscode/bitcoin_price_model.m` – Feature engineering + regression + forecast
+- `vscode/fetch_bitcoin_data.m` – Robust loader for sample or user CSV
+- `data/bitcoin_sample_prices.csv` – Bundled sample dataset
+- `tests/testBitcoinPriceModel.m` – Minimal unit test (model + 5-day forecast)
+
+### Testing
+Run the unit test:
+```matlab
+runtests('tests/testBitcoinPriceModel.m')
+```
+Expected: 1 Passed, 0 Failed.
+
 ## Next Steps / Ideas
 - Add CI script to verify basic server invocation.
 - Create sample MATLAB project (`examples/linear_regression.m`).
