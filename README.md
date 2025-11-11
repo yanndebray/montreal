@@ -14,6 +14,20 @@ The MATLAB MCP Core Server is a local Model Context Protocol (MCP) server that l
 ![claude](img/claude.png)
 
 ### VS Code GitHub Copilot
+
+#### Montreal Weather Sine Fitting App (NEW! 🌟)
+- [montreal_weather_sine_app.m](vscode/montreal_weather_sine_app.m) - Advanced weather analysis with **sine fitting** and multiple regression models
+  - **Default: Sine Fitting** - Captures seasonal temperature patterns with amplitude, period, and phase
+  - **Alternative Models**: Linear, Polynomial (2nd, 3rd, 4th degree)
+  - **Features**: 
+    - Montreal as default city with 6 quick-select cities
+    - Flexible date ranges (1-3 years) for seasonal analysis
+    - Model comparison with R² and RMSE metrics
+    - Interactive visualizations: fitted model, temperature variations, residuals, precipitation
+    - Comprehensive statistics including seasonal amplitude and period
+  - [Example script](vscode/example_montreal_sine_fitting.m) | [Full Documentation](README_sine_app.md)
+
+#### Weather Linear Regression App
 - [weather_regression_app.m](vscode/weather_regression_app.m) - Interactive GUI for analyzing weather trends with linear regression
   - Features: Multi-city selection, date range picker, live regression analysis, interactive plots
   - Uses Open-Meteo API for historical weather data

@@ -1,0 +1,191 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║         MONTREAL WEATHER SINE FITTING APP - QUICK START GUIDE           ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+🚀 GETTING STARTED (2 steps)
+────────────────────────────────────────────────────────────────────────────
+
+1. Open MATLAB and navigate to the app directory:
+   >> cd('c:\Users\ydebray\Downloads\montreal\vscode')
+
+2. Launch the application:
+   >> montreal_weather_sine_app
+
+
+📋 QUICK USAGE
+────────────────────────────────────────────────────────────────────────────
+
+Step 1: SELECT A CITY
+   • Click "Montreal, Canada" (default) or any other preset city
+   • Or enter custom coordinates (latitude/longitude)
+
+Step 2: CHOOSE TIME RANGE
+   • Click "1 year", "2 years", or "3 years" buttons
+   • Or enter custom dates (YYYY-MM-DD format)
+   • Recommendation: 1+ year for sine fitting
+
+Step 3: SELECT MODEL
+   • Sine (default) ← Best for seasonal patterns
+   • Linear ← For warming/cooling trends
+   • Polynomial (2-4°) ← For complex patterns
+
+Step 4: ANALYZE
+   • Click "🔍 Analyze Weather with Sine Fitting"
+   • View results in 5 tabs:
+     1. Statistics & Fitting
+     2. Fitted Model (chart)
+     3. Temperature Variations
+     4. Residual Plot
+     5. Precipitation
+
+
+🎯 MODEL SELECTION GUIDE
+────────────────────────────────────────────────────────────────────────────
+
+┌─────────────┬──────────────────────┬──────────────────────────────────┐
+│ Model       │ Best For             │ Key Metrics                      │
+├─────────────┼──────────────────────┼──────────────────────────────────┤
+│ SINE        │ Seasonal cycles      │ Amplitude, Period, Phase         │
+│             │ (default)            │ Shows ±temp variation & timing   │
+├─────────────┼──────────────────────┼──────────────────────────────────┤
+│ LINEAR      │ Long-term trends     │ Slope (°C/day)                   │
+│             │ Climate change       │ Shows warming/cooling rate       │
+├─────────────┼──────────────────────┼──────────────────────────────────┤
+│ POLYNOMIAL  │ Complex patterns     │ Polynomial coefficients          │
+│ (2nd-4th)   │ Multiple trends      │ Captures curved trends           │
+└─────────────┴──────────────────────┴──────────────────────────────────┘
+
+
+📊 INTERPRETING RESULTS
+────────────────────────────────────────────────────────────────────────────
+
+R² (R-squared):
+  > 0.9   = EXCELLENT fit ✓✓✓
+  0.7-0.9 = GOOD fit ✓✓
+  0.5-0.7 = MODERATE fit ✓
+  < 0.5   = POOR fit ✗ (try different model)
+
+RMSE (Root Mean Square Error):
+  Lower = Better
+  Typical: 1-3°C for good fits
+  Compare between models to choose best one
+
+FOR SINE MODEL:
+  Amplitude = How much temperature varies (e.g., ±15°C)
+  Period    = Length of cycle (should be ~365 days)
+  Phase     = When temperature peaks (summer timing)
+  Offset    = Average temperature
+
+
+💡 EXAMPLES & TIPS
+────────────────────────────────────────────────────────────────────────────
+
+EXAMPLE 1: Analyze Montreal's seasonal pattern
+  City: Montreal, Canada (45.50°N, -73.57°W)
+  Range: 1 year
+  Model: Sine
+  Look for: Large amplitude (~30°C range winter to summer)
+
+EXAMPLE 2: Detect warming trend
+  City: Any location
+  Range: 3 years
+  Model: Linear
+  Look for: Positive slope = warming
+
+EXAMPLE 3: Compare models
+  Run analysis with Sine, then Linear, then Polynomial
+  Compare R² values - higher is better
+  Check residual plots - should be random scatter
+
+TIPS:
+  ✓ Start with 1 year of data for sine fitting
+  ✓ Use 2-3 years for more robust results
+  ✓ Sine works best for most weather data
+  ✓ Check residual plot - patterns indicate poor fit
+  ✓ Try different models if R² < 0.7
+
+
+🌍 PRESET CITIES
+────────────────────────────────────────────────────────────────────────────
+
+  Montreal, Canada    45.50°N,  -73.57°W  (Continental, cold winters)
+  Paris, France       48.86°N,    2.35°E  (Temperate, mild seasons)
+  New York, USA       40.71°N,  -74.01°W  (Continental, four seasons)
+  London, UK          51.51°N,   -0.13°W  (Oceanic, mild year-round)
+  Tokyo, Japan        35.68°N,  139.65°E  (Humid subtropical)
+  Sydney, Australia  -33.87°S,  151.21°E  (Temperate, reversed seasons)
+
+
+📁 FILES & DOCUMENTATION
+────────────────────────────────────────────────────────────────────────────
+
+Main Application:
+  vscode/montreal_weather_sine_app.m
+
+Example Code:
+  vscode/example_montreal_sine_fitting.m
+
+Full Documentation:
+  README_sine_app.md (comprehensive guide with examples)
+
+Tests:
+  tests/testMontrealWeatherSineApp.m
+
+
+🔧 TROUBLESHOOTING
+────────────────────────────────────────────────────────────────────────────
+
+Problem: "Unexpected API response"
+  → Try shorter date range
+  → Check internet connection
+  → Verify coordinates are valid
+
+Problem: Poor R² (<0.5)
+  → Try different model type
+  → Increase date range (more data)
+  → For sine: need at least 365 days
+
+Problem: Unrealistic sine period
+  → Need at least 1 complete year of data
+  → Try 2-3 years for better fit
+
+Problem: Can't connect to API
+  → Check firewall settings
+  → Verify MATLAB can access internet
+  → Try preset cities first
+
+
+❓ FREQUENTLY ASKED QUESTIONS
+────────────────────────────────────────────────────────────────────────────
+
+Q: Which model should I use?
+A: Start with SINE for seasonal analysis. Most weather follows annual cycles.
+
+Q: How much data do I need?
+A: Minimum 10 days, recommended 365+ days for sine, 30+ for linear.
+
+Q: What if my model doesn't fit well?
+A: Try a different model type, increase data range, or check data quality.
+
+Q: Can I analyze multiple cities?
+A: Yes! Run analysis for one city, then change city and run again.
+
+Q: How do I save results?
+A: Take screenshots of plots, or copy statistics from details panel.
+
+Q: What does phase mean in sine model?
+A: Phase shift indicates when temperature peaks. Adjust for your hemisphere.
+
+
+📞 SUPPORT
+────────────────────────────────────────────────────────────────────────────
+
+For more information:
+  • Read README_sine_app.md for detailed documentation
+  • Run example_montreal_sine_fitting.m to see programmatic usage
+  • Check Open-Meteo API docs: https://open-meteo.com/
+
+
+═══════════════════════════════════════════════════════════════════════════
+                            Happy Analyzing! 🌤️📊
+═══════════════════════════════════════════════════════════════════════════
