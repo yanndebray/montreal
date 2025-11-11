@@ -2,7 +2,7 @@
 
 A comprehensive MATLAB application for analyzing weather data using sine fitting and various regression models. This app allows you to explore temperature patterns for any city worldwide with flexible model selection.
 
-![Montreal Weather App](img/app_screenshot.png)
+![Montreal Weather App](../img/app_screenshot.png)
 
 ## Features
 
