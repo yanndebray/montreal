@@ -23,7 +23,7 @@ function weather_regression_app()
     
     % Create input grid
     inputGrid = uigridlayout(topPanel, [6, 4]);
-    inputGrid.RowHeight = {30, 30, 30, 30, 30, 40};
+    inputGrid.RowHeight = {30, 30, 30, 30, 30, 30};
     inputGrid.ColumnWidth = {'1x', '1x', '1x', '1x'};
     inputGrid.Padding = [20 20 20 20];
     
@@ -110,18 +110,21 @@ function weather_regression_app()
     endDateField.Layout.Row = 6;
     endDateField.Layout.Column = 4;
     
-    % Create buttons at bottom of input panel
+    % Create analyze button centered in input panel
     btnGrid = uigridlayout(topPanel, [1, 3]);
-    btnGrid.ColumnWidth = {'1x', 200, '1x'};
+    btnGrid.RowHeight = {35};
+    btnGrid.ColumnWidth = {'1x', 220, '1x'};
     btnGrid.Padding = [20 5 20 10];
     
-    % Spacers (blank labels so default 'Label' text doesn't appear)
+    % Spacers
     uilabel(btnGrid, 'Text', '');
     
     % Analyze button
     analyzeBtn = uibutton(btnGrid, 'Text', '🔍 Analyze Weather Trends', ...
                           'ButtonPushedFcn', @(~,~) analyzeWeather(), ...
                           'FontSize', 14, 'FontWeight', 'bold');
+    analyzeBtn.Layout.Row = 1;
+    analyzeBtn.Layout.Column = 2;
     analyzeBtn.BackgroundColor = [0.3, 0.5, 0.9];
     analyzeBtn.FontColor = 'white';
     
