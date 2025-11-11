@@ -16,6 +16,11 @@ The MATLAB MCP Core Server is a local Model Context Protocol (MCP) server that l
   - Features: Multi-city selection, date range picker, live regression analysis, interactive plots
   - Uses Open-Meteo API for historical weather data
   - Displays R² score, temperature trends, and precipitation analysis
+  
+#### Chat Prompts Viewer
+- [chat_prompts_app.m](vscode/chat_prompts_app.m) - Small UI to browse all user prompts from a chat export JSON
+  - Defaults to `chats/chat_weather_app.json` in this repo
+  - Filter by substring, click to preview, double-click to copy to clipboard
 
 ## Key Features
 - Launch and shut down a local MATLAB session on demand.
